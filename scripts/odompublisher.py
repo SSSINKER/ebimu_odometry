@@ -24,6 +24,9 @@ odom_broadcaster = tf.TransformBroadcaster()
 
 imu_port = "/dev/ttyUSB0"
 ser = serial.Serial(imu_port, 115200) # determine manually
+ser.write('<sof1>')
+ser.write('<sog1>')
+ser.write('<soa5>')
 imu_data = IMUParser(ser)
 speed = 1
 x = 0.0
@@ -59,7 +62,7 @@ while not rospy.is_shutdown():
         (x, y, 0.),
         odom_quat,
         current_time,
-        "base_link",
+        "base_footprint",
         "odom"
     )
 
@@ -72,7 +75,7 @@ while not rospy.is_shutdown():
     odom.pose.pose = Pose(Point(x, y, 0.), Quaternion(*odom_quat))
 
     # set the velocity
-    odom.child_frame_id = "base_link"
+    odom.child_frame_id = "base_footprint"
     odom.twist.twist = Twist(Vector3(vx, vy, 0), Vector3(0, 0, vth))
 
     # publish the message
