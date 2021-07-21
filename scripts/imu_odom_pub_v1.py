@@ -16,7 +16,7 @@ def talker():
     rospy.loginfo("Starting sensor publisher...")
     rospy.init_node('imu_odom_publisher')
 
-    imu_port = "/dev/ttyUSB0"
+    imu_port = "/dev/ttyUSB1"
     imu_data = Imu()
     odom_data = Odometry()
     ser = serial.Serial(imu_port, 115200) # determine manually
@@ -132,7 +132,7 @@ def talker():
 
         prev_str = str_list
         end_time = time.time()
-        print("time elapsed: {}".format(end_time - start_time))
+        # print("time elapsed: {}".format(end_time - start_time))
         rate.sleep()
 
 if __name__ == '__main__':
