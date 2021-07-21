@@ -16,20 +16,25 @@ def talker():
     rospy.loginfo("Starting sensor publisher...")
     rospy.init_node('imu_odom_publisher')
 
-    imu_port = "/dev/ttyUSB1"
+    # get parameter
+    imu_port = rospy.get_param('port', '/dev/ttyUSB0')
+    baud = rospy.get_param('baud', 115200)
+
+
+    # initialize IMU w/ serial commands
     imu_data = Imu()
     odom_data = Odometry()
-    ser = serial.Serial(imu_port, 115200) # determine manually
-    ser.write('<sof2>')
+    ser = serial.Serial(imu_port, baud)
+    ser.write('<sof2>') # set quaternion output
     ser.readline()
     print(ser.readline())
-    ser.write('<sog1>')
+    ser.write('<sog1>') # set gyro (angular velocity) data output
     print(ser.readline())
-    ser.write('<soa5>')
+    ser.write('<soa5>') # set global linear velocity data output
     print(ser.readline())
-    ser.write('<sem1>')
+    ser.write('<sem1>') # set magnetometer on
     print(ser.readline())
-    ser.write('<sor100>')
+    ser.write('<sor100>') # set output rate to 100ms = 10hz
     print(ser.readline())
     #ser.write('<lpf20>')
     #print(ser.readline())
@@ -44,7 +49,7 @@ def talker():
     prev_str = ser.readline() # when prev_str is bad input -> :(
     last_time = rospy.Time.now()
     while not rospy.is_shutdown():
-        start_time = time.time()
+        # start_time = time.time()
         ser.reset_input_buffer()
 
         str_temp = ser.readline()
@@ -84,10 +89,6 @@ def talker():
 
         odom_quat = (float(str_list[2]),float(str_list[1]),float(str_list[0]),float(str_list[3]))
         euler = tf.transformations.euler_from_quaternion(odom_quat)
-        # print(euler)
-
-	# pitch?? ros ????? ??? ???? ?? ???? ????? ?? ??????? ?????
-    # imu?? ?? ???? ?? ??? ? ? ??
         stab_quat = tf.transformations.quaternion_from_euler(euler[0],-euler[1],0)
         stab_broadcaster.sendTransform(
             (0, 0, 0),
@@ -110,6 +111,7 @@ def talker():
         odom_data.twist.twist.angular.x = 0
         odom_data.twist.twist.angular.y = 0
         odom_data.twist.twist.angular.z = float(str_list[6])
+
         # first, we'll publish the transform over tf
         odom_broadcaster.sendTransform(
             (x, y, 0.0),
@@ -131,8 +133,7 @@ def talker():
         last_time = current_time
 
         prev_str = str_list
-        end_time = time.time()
-        # print("time elapsed: {}".format(end_time - start_time))
+        # end_time = time.time()
         rate.sleep()
 
 if __name__ == '__main__':
