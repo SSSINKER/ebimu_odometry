@@ -9,7 +9,7 @@ from sensor_msgs.msg import Imu
 def talker():
     rospy.loginfo("Starting sensor publisher...")
     rospy.init_node('imu_publisher')
-    imu_port = "/dev/ttyUSB0"
+    imu_port = "/dev/ttyUSB2"
     ser = serial.Serial(imu_port, 115200) # determine manually
     ser.write('<sof2>')
     ser.write('<sog1>')
