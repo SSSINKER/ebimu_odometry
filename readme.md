@@ -2,6 +2,8 @@
 ROS package which publishes odometry message from EBIMU-9DOFV4 IMU </br>
 
 ### Recent Changes
+* 2021.07.22 </br>
+added rosparam input, but not working well.
 * 2021.07.19 </br>
 renewed old repository and files.
 
