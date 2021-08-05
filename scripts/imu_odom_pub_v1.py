@@ -17,8 +17,8 @@ def talker():
     rospy.init_node('imu_odom_publisher')
 
     # get parameter
-    imu_port = rospy.get_param('port', '/dev/ttyUSB2') #"""dmesg grep usb : CP210X"""
-    baud = rospy.get_param('baud', 115200)
+    imu_port = rospy.get_param('imu_port', '/dev/ttyUSB1') #"""dmesg grep usb : CP210X"""
+    baud = rospy.get_param('imu_baud', 115200)
 
 
     # initialize IMU w/ serial commands
