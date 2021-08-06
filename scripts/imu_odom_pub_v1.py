@@ -24,6 +24,8 @@ def talker():
     # initialize IMU w/ serial commands
     imu_data = Imu()
     odom_data = Odometry()
+    # note: both imu_data and odom_data implies CW increase of yaw
+
     ser = serial.Serial(imu_port, baud)
     ser.write('<sof2>') # set quaternion output
     ser.readline()
@@ -47,9 +49,9 @@ def talker():
     x = 0
     y = 0
     prev_str = ser.readline() # when prev_str is bad input -> :(
-    last_time = rospy.Time.now()
+
+    rospy.loginfo("start ebimu node")
     while not rospy.is_shutdown():
-        # start_time = time.time()
         ser.reset_input_buffer()
 
         str_temp = ser.readline()
@@ -64,6 +66,7 @@ def talker():
         str_list[0] = str_list[0].split('*')[1]
         imu_data.header.stamp = rospy.Time.now()
         imu_data.header.frame_id = "base_link"
+        # note: EBIMU returns quaternion vector in order of [z, y, x, w]
         imu_data.orientation.z = float(str_list[0])
         imu_data.orientation.y = float(str_list[1])
         imu_data.orientation.x = float(str_list[2])
@@ -89,9 +92,9 @@ def talker():
 
         odom_quat = (float(str_list[2]),float(str_list[1]),float(str_list[0]),float(str_list[3]))
         euler = tf.transformations.euler_from_quaternion(odom_quat)
-        stab_quat = tf.transformations.quaternion_from_euler(euler[0],-euler[1],0)
+        stab_quat = tf.transformations.quaternion_from_euler(-euler[0], -euler[1], 0)
         stab_broadcaster.sendTransform(
-            (0, 0, 0),
+            (0, 0, -0.1),
             stab_quat,
             rospy.Time.now(),
             "base_link",
@@ -112,12 +115,11 @@ def talker():
         odom_data.twist.twist.angular.y = 0
         odom_data.twist.twist.angular.z = float(str_list[6])
 
-        # first, we'll publish the transform over tf
         odom_broadcaster.sendTransform(
             (x, y, 0.0),
             odom_quat,
             rospy.Time.now(),
-            "base_footprint",
+            "base_link",
             "odom"
         )
 
