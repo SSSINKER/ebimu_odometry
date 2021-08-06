@@ -128,7 +128,7 @@ def talker():
         odom_data.header.frame_id = "odom"
 
         # set the velocity
-        odom_data.child_frame_id = "base_footprint"
+        odom_data.child_frame_id = "base_link"
 
         # publish the message
         odom_pub.publish(odom_data)

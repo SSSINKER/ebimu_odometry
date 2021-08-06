@@ -45,6 +45,7 @@ def talker():
     imu_pub = rospy.Publisher("imu_data", Imu, queue_size=5)
     odom_pub = rospy.Publisher("odom", Odometry, queue_size=5)
     odom_broadcaster = tf.TransformBroadcaster()
+    stab_broadcaster = tf.TransformBroadcaster()
 
     rate = rospy.Rate(10) # 10hz
 
@@ -86,6 +87,14 @@ def talker():
         odom_quat = (float(str_list[2]),float(str_list[1]),float(str_list[0]),float(str_list[3]))
         euler = tf.transformations.euler_from_quaternion(odom_quat)
         odom_quat = tf.transformations.quaternion_from_euler(0, 0, -euler[2])
+        stab_quat = tf.transformations.quaternion_from_euler(-euler[0], -euler[1], 0)
+        stab_broadcaster.sendTransform(
+            (0, 0, -0.1),
+            stab_quat,
+            rospy.Time.now(),
+            "base_link",
+            "base_footprint"
+        )
 
         odom_data.pose.pose.orientation.x = float(str_list[2])
         odom_data.pose.pose.orientation.y = float(str_list[1])
