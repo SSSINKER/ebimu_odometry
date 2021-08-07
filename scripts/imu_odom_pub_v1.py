@@ -105,8 +105,8 @@ def talker():
         dy = (vx * sin(th) + vy * cos(th)) * dt
         # dx = vx * dt
         # dy = vy * dt
-        # x += dx
-        # y += dy
+        x += dx
+        y += dy
 
         odom_quat_reverse = tf.transformations.quaternion_from_euler(euler[0], -euler[1], -euler[2])
         odom_quat_reverse_2d = tf.transformations.quaternion_from_euler(0, 0, -euler[2])
