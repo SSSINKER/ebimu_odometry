@@ -6,14 +6,15 @@ import serial
 import rospy
 import tf
 import time
+import re
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Point, Pose, Quaternion, Twist, Vector3
 from sensor_msgs.msg import Imu
 
 
 def talker():
-    rospy.loginfo("Starting sensor publisher...")
     rospy.init_node('imu_odom_publisher')
+    rospy.loginfo("Starting sensor publisher...")
 
     # get parameter
     imu_port = rospy.get_param('~port', '/dev/ttyUSB1') #"""dmesg grep usb : CP210X"""
@@ -27,20 +28,27 @@ def talker():
 
     ser = serial.Serial(imu_port, baud)
     ser.write('<sof2>') # set quaternion output
+    rospy.loginfo("imu setup: quaternion ON")
     ser.readline()
-    print(ser.readline())
     ser.write('<sog1>') # set gyro (angular velocity) data output
-    print(ser.readline())
+    rospy.loginfo("imu setup: angular velocity ON")
+    ser.readline()
     ser.write('<soa5>') # set global linear velocity data output
-    print(ser.readline())
+    rospy.loginfo("imu setup: linear velocity ON")
+    ser.readline()
     ser.write('<sem1>') # set magnetometer on
-    print(ser.readline())
-    ser.write('<sod1>') # set local distance(calculated by intergration of velocity) data output 
-    print(ser.readline())
+    rospy.loginfo("imu setup: magnetometer ON")
+    ser.readline()
+    ser.write('<sod2>') # set global distance(calculated by intergration of velocity) data output 
+    rospy.loginfo("imu setup: distance ON")
+    ser.readline()
     ser.write('<sor100>') # set output rate to 100ms = 10hz
-    print(ser.readline())
-    # ser.write('<lpf2>') # set low pass filter (cutoff f=10hz)
-    # print(ser.readline())
+    rospy.loginfo("imu setup: 10hz output rate")
+    ser.readline()
+    # ser.write('<lpf20>') # set low pass filter (cutoff f=10hz)
+    # rospy.loginfo("imu setup: LPF (f=10hz) ON")
+    # ser.readline()
+
 
     imu_pub = rospy.Publisher("imu_data", Imu, queue_size=5)
     odom_pub = rospy.Publisher("odom", Odometry, queue_size=5)
@@ -57,8 +65,9 @@ def talker():
         ser.reset_input_buffer()
         str_temp = ser.readline()
         comma_cnt = len([m.start() for m in re.finditer(',', str_temp)])
-        if (comma_cnt != 9):
+        if (comma_cnt != 12):
             str_list = prev_str
+            rospy.logwarn("invalid message from imu. ignore data for once")
         else:
             str_list = str_temp
             prev_str = str_temp
@@ -87,13 +96,13 @@ def talker():
         odom_quat = (float(str_list[2]),float(str_list[1]),float(str_list[0]),float(str_list[3]))
         euler = tf.transformations.euler_from_quaternion(odom_quat)
         odom_quat = tf.transformations.quaternion_from_euler(0, 0, -euler[2])
-        stab_quat = tf.transformations.quaternion_from_euler(-euler[0], -euler[1], 0)
+        stab_quat = tf.transformations.quaternion_from_euler(-euler[0], euler[1], euler[2])
         stab_broadcaster.sendTransform(
             (0, 0, -0.1),
             stab_quat,
             rospy.Time.now(),
-            "base_link",
-            "base_footprint"
+            "base_footprint",
+            "base_link"
         )
 
         odom_data.pose.pose.orientation.x = float(str_list[2])
