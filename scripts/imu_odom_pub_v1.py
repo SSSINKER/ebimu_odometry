@@ -27,6 +27,8 @@ def talker():
     # note: both imu_data and odom_data implies CW increase of yaw
 
     ser = serial.Serial(imu_port, baud)
+    ser.write('<soc1>') # set ASCII output
+    ser.readline()
     ser.write('<sof2>') # set quaternion output
     rospy.loginfo("imu setup: quaternion ON")
     ser.readline()
@@ -53,6 +55,7 @@ def talker():
     odom_pub = rospy.Publisher("odom", Odometry, queue_size=5)
     odom_broadcaster = tf.TransformBroadcaster()
     stab_broadcaster = tf.TransformBroadcaster()
+    odom_map_broadcaster = tf.TransformBroadcaster()
     rate = rospy.Rate(10) # 10hz
     x = 0
     y = 0
@@ -112,11 +115,19 @@ def talker():
         odom_quat_reverse_2d = tf.transformations.quaternion_from_euler(0, 0, -euler[2])
 
         stab_quat = tf.transformations.quaternion_from_euler(-euler[0], euler[1], -euler[2])
+        zero_quat = tf.transformations.quaternion_from_euler(0, 0, 0)
         stab_broadcaster.sendTransform(
             (x, y, 0),
             odom_quat_reverse_2d,
             rospy.Time.now(),
             "base_footprint",
+            "odom"
+        )
+        odom_map_broadcaster.sendTransform(
+            (0, 0, 0),
+            zero_quat,
+            rospy.Time.now(),
+            "map",
             "odom"
         )
 
