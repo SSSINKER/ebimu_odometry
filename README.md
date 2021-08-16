@@ -1,6 +1,6 @@
 # ebimu_odometry
 ROS package which publishes odometry message from EBIMU-9DOFV4 IMU </br>
-*Recommended: use imu_odom_pub_v1.py<br/>*
+
 ### Recent Changes
 
 * 2021.08.15 </br>
