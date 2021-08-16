@@ -17,7 +17,7 @@ def talker():
     rospy.loginfo("Starting imu sensor setup...")
 
     # get parameter
-    imu_port = rospy.get_param('~port', '/dev/ttyUSB1') #"""dmesg grep usb : CP210X"""
+    imu_port = rospy.get_param('~port', '/dev/ttyUSB2') #"""dmesg grep usb : CP210X"""
     baud = rospy.get_param('~baud', 115200)
 
 

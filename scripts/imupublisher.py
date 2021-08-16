@@ -100,6 +100,7 @@ def talker():
 
     rospy.loginfo("start ebimu node")
     while not rospy.is_shutdown():
+        start = rospy.Time.now()
         ser.reset_input_buffer()
 
         str_temp = ser.readline()
@@ -126,9 +127,9 @@ def talker():
         imu_data.linear_acceleration.y = float(str_list[8])
         imu_data.linear_acceleration.z = float(str_list[9])
         imu_data.linear_acceleration_covariance = [0.005, 0, 0, 0, 0.005, 0, 0, 0, 0.005]
-        imu_data.angular_velocity.x = float(str_list[4])
-        imu_data.angular_velocity.y = float(str_list[5])
-        imu_data.angular_velocity.z = float(str_list[6])
+        imu_data.angular_velocity.x = math.radians(float(str_list[4]))
+        imu_data.angular_velocity.y = math.radians(float(str_list[5]))
+        imu_data.angular_velocity.z = math.radians(float(str_list[6]))
         imu_data.angular_velocity_covariance = [0.001, 0, 0, 0, 0.001, 0, 0, 0, 0.001]
         imu_pub.publish(imu_data)
 
@@ -136,7 +137,7 @@ def talker():
         euler = tf.transformations.euler_from_quaternion(odom_quat)
         odom_quat_reverse_2d = tf.transformations.quaternion_from_euler(-euler[0], euler[1], 0)
         base_link_2_base_footprint_tf.sendTransform(
-            (0, 0, -0.5),
+            (0, 0, -0.1),
             odom_quat_reverse_2d,
             rospy.Time.now(),
             "base_footprint",
