@@ -26,23 +26,39 @@ Installation Guide
 Nodes
 --
 
-```imu_odom_pub.py```<br/>
-* publish both odometry and IMU data.
-    * IMU data:
-        * orientation: quaternion from IMU raw data
+## imu_odom_pub.py <br/>
+Publish both odometry and IMU data.
+   * Subscribed Topics
+      * NaN
+   * Published Topics
+      * ```/imu_data``` (sensors_msg/Imu) : IMU data.
+        * orientation: quaternion from IMU magnetometer data
         * linear acceleration: all zero
         * angular velocity: all zero
-    * odometry:
-        * position: calculated by integral
-        * twist: linear&angular velocity calculated by IMU
+      * ```/odom``` (nav_msgs/Odometry) : Odometry data.
+         * position: calculated by integral
+         * twist: linear&angular velocity calculated by IMU
+   * Parameters
+      * ```~port``` (```string```, default: '/dev/ttyUSB0') : USB port number
+      * ```~baud``` (```integer```, default: 115200) : baudrate
+   * Provided tf Transforms
+      * ```odom``` -> ```base_footprint```
+      * ```base_footprint``` -> ```base_link```
 <br/>
 
-```imupublisher.py```<br/>
-* publish only imu data
-    * IMU data:
+## imupublisher.py<br/>
+Publish only IMU data.
+   * Subscribed Topics
+      * NaN
+   * Published Topics
+      * ```/imu_data``` (sensors_msg/Imu) : IMU data.
         * orientation: quaternion from IMU magnetometer data
         * linear acceleration: from IMU accelerometer data
         * angular velocity: from IMU gyrometer data
-
+   * Parameters
+      * ```~port``` (```string```, default: '/dev/ttyUSB0') : USB port number
+      * ```~baud``` (```integer```, default: 115200) : baudrate
+   * Provided tf Transforms
+      * ```base_footprint``` -> ```base_link```
 <br/>
 
