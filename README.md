@@ -3,6 +3,9 @@ ROS package which publishes odometry message from EBIMU-9DOFV4 IMU </br>
 
 ### Recent Changes
 
+* 2021.08.24 </br>
+c++ version of imupublisher </br>
+
 * 2021.08.15 </br>
 revised code, tf, odometry publisher </br>
 
@@ -21,12 +24,12 @@ Installation Guide
 
 1. clone this repository at catkin_ws/src
 2. ~/catkin_ws $ catkin_make
-3. rosrun ebimu_odometry {script_name}
+3. rosrun ebimu_odometry imupublisher
 
 Nodes
 --
 
-## imu_odom_pub.py <br/>
+## imu_odom_pub (not converted to c++ yet) <br/>
 Publish both odometry and IMU data.
    * Subscribed Topics
       * NaN
@@ -46,7 +49,7 @@ Publish both odometry and IMU data.
       * ```base_footprint``` -> ```base_link```
 <br/>
 
-## imupublisher.py<br/>
+## imupublisher <br/>
 Publish only IMU data.
    * Subscribed Topics
       * NaN
