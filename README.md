@@ -3,6 +3,9 @@ ROS package which publishes odometry message from EBIMU-9DOFV4 IMU </br>
 
 ### Recent Changes
 
+* 2021.08.25 </br>
+publish ```/auv_rpy_stamped``` topic </br>
+
 * 2021.08.24 </br>
 c++ version of imupublisher </br>
 
