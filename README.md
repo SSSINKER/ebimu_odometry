@@ -66,6 +66,6 @@ Publish only IMU data.
       * ```~port``` (```string```, default: '/dev/ttyUSB0') : USB port number
       * ```~baudrate``` (```integer```, default: 115200) : baudrate
    * Provided tf Transforms
-      * ```base_footprint``` -> ```base_link```
+      * ```base_link``` -> ```base_footprint```
 <br/>
 
