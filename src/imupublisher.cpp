@@ -31,12 +31,13 @@ vector<string> split(string input, char delimiter) {
 int main (int argc, char** argv) {
     ros::init(argc, argv, "imupublisher");
     ros::NodeHandle nh;
+    ros::NodeHandle nh_prv("~");
 
     string imu_port;
     int baudrate;
 
-    nh.param<string>("/imu/port", imu_port, "/dev/ttyUSB0");
-    nh.param<int>("/imu/baudrate", baudrate, 115200);
+    nh_prv.param<string>("port", imu_port, "/dev/ttyUSB0");
+    nh_prv.param<int>("baudrate", baudrate, 115200);
 
     sensor_msgs::Imu imu_data;
     geometry_msgs::Vector3Stamped rpy_data;
