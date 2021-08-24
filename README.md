@@ -61,9 +61,10 @@ Publish only IMU data.
         * orientation: quaternion from IMU magnetometer data
         * linear acceleration: from IMU accelerometer data
         * angular velocity: from IMU gyrometer data
+      * ```/auv_rpy_stamped``` (geometry_msg/Vector3Stamped) : roll, pitch, yaw in radians
    * Parameters
       * ```~port``` (```string```, default: '/dev/ttyUSB0') : USB port number
-      * ```~baud``` (```integer```, default: 115200) : baudrate
+      * ```~baudrate``` (```integer```, default: 115200) : baudrate
    * Provided tf Transforms
       * ```base_footprint``` -> ```base_link```
 <br/>
