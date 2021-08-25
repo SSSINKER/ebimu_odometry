@@ -136,9 +136,9 @@ int main (int argc, char** argv) {
         // note: ebimu gives quaternion data in order of (z, y, x, w)
 
         tf::Quaternion q;
-        q.setX(stod(str_vec[0]));
+        q.setZ(stod(str_vec[0]));
         q.setY(stod(str_vec[1]));
-        q.setZ(stod(str_vec[2]));
+        q.setX(stod(str_vec[2]));
         q.setW(stod(str_vec[3]));
         double yaw, pitch, roll;
         tf::Matrix3x3 mat(q);
