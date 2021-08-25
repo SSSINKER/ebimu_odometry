@@ -10,7 +10,6 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   sensor_msgs
   tf
-  auv_msgs
 )
 
 ## Declare a catkin package
