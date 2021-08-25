@@ -10,6 +10,7 @@
 #include <geometry_msgs/Point.h>
 #include <vector>
 #include <sstream>
+#include <algorithm>
 #include <math.h>
 
 using namespace std;
@@ -33,15 +34,31 @@ int main (int argc, char** argv) {
     ros::NodeHandle nh;
     ros::NodeHandle nh_prv("~");
 
-    string imu_port;
-    int baudrate;
+    string imu_port = "/dev/ttyUSB0";
+    int baudrate = 115200;
 
-    nh_prv.param<string>("port", imu_port, "/dev/ttyUSB0");
-    nh_prv.param<int>("baudrate", baudrate, 115200);
+    if (!nh_prv.getParam("port", imu_port)) {
+        vector<string> keys;
+        ros::param::getParamNames(keys);
+        if (find(keys.begin(), keys.end(), "/imu/port") != keys.end()) {
+            nh.getParam("/imu/port", imu_port);
+        } else {
+            ROS_INFO_STREAM("Can't find '/imu/port' on param server. Using default value.");
+        }
+    }
+
+    if (!nh_prv.getParam("baud", baudrate)) {
+        vector<string> keys;
+        ros::param::getParamNames(keys);
+        if (find(keys.begin(), keys.end(), "/imu/port") != keys.end()) {
+            nh.getParam("/imu/baud", baudrate);
+        } else {
+            ROS_INFO_STREAM("Can't find '/imu/baud' on param server. Using default value.");
+        }
+    }
 
     sensor_msgs::Imu imu_data;
     geometry_msgs::Vector3Stamped rpy_data;
-
 
     ros::Publisher imu_pub = nh.advertise<sensor_msgs::Imu>("imu_data", 5);
     ros::Publisher rpy_pub = nh.advertise<geometry_msgs::Vector3Stamped>("auv_rpy_stamped", 5);
@@ -54,8 +71,7 @@ int main (int argc, char** argv) {
         serial::Timeout to = serial::Timeout::simpleTimeout(1000);
         ser.setTimeout(to);
         ser.open();
-    }
-    catch (serial::IOException& e) {
+    } catch (serial::IOException& e) {
         ROS_ERROR_STREAM("Unable to open port ");
         return -1;
     }
